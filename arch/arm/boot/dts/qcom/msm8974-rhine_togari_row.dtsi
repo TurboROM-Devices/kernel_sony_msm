@@ -53,7 +53,7 @@
 			touch_pressure_enabled = <1>;
 			touch_size_enabled = <0>;
 			touch_orientation_enabled = <0>;
-			report_pen_as_finger = <1>;
+			report_pen_as_finger = <0>;
 			wakeup_gesture_support = <1>;
 			wakeup_gesture_timeout = <2000>;
                         wakeup_gesture {
