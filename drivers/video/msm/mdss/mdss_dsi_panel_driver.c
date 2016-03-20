@@ -378,7 +378,28 @@ disp_en_gpio_err:
 	if (gpio_is_valid(ctrl_pdata->spec_pdata->disp_dcdc_en_gpio))
 		gpio_free(ctrl_pdata->spec_pdata->disp_dcdc_en_gpio);
 disp_dcdc_en_gpio_err:
+	gpio_req = false;
 	return rc;
+}
+
+static void mdss_dsi_free_gpios(struct mdss_dsi_ctrl_pdata *ctrl_pdata)
+{
+	if (gpio_is_valid(ctrl_pdata->spec_pdata->disp_dcdc_en_gpio))
+		gpio_free(ctrl_pdata->spec_pdata->disp_dcdc_en_gpio);
+        
+	if (gpio_is_valid(ctrl_pdata->disp_en_gpio))
+		gpio_free(ctrl_pdata->disp_en_gpio);
+
+	if (gpio_is_valid(ctrl_pdata->bklt_en_gpio))
+		gpio_free(ctrl_pdata->bklt_en_gpio);
+
+	if (gpio_is_valid(ctrl_pdata->rst_gpio))
+		gpio_free(ctrl_pdata->rst_gpio);
+
+	if (gpio_is_valid(ctrl_pdata->mode_gpio))
+		gpio_free(ctrl_pdata->mode_gpio);
+
+	gpio_req = false;
 }
 
 static void mdss_dsi_panel_set_gpio_seq(
@@ -493,9 +514,13 @@ static int mdss_dsi_panel_reset_seq(struct mdss_panel_data *pdata, int enable)
 			gpio_direction_output(spec_pdata->disp_p5, 0);
 			usleep_range(10000, 10000);
 		}
-	} else
+	} else {
 		mdss_dsi_panel_set_gpio_seq(ctrl_pdata->rst_gpio,
 			pw_seq->seq_num, pw_seq->rst_seq);
+
+		if (!enable && spec_pdata->pwron_reset)
+			mdss_dsi_free_gpios(ctrl_pdata);
+	}
 
 	return 0;
 }
